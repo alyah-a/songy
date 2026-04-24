@@ -8,7 +8,7 @@ export default function Home() {
         <div className="nav-inner">
           <a href="/" className="logo">
             <span className="logo-mark" />
-            SONGEE
+            SONGIE
           </a>
           <div className="nav-links">
             <a href="#pricing">Pricing</a>
@@ -45,7 +45,7 @@ export default function Home() {
                 <div className="reel reel-r"><div className="teeth" /></div>
               </div>
               <div className="cass-bottom">
-                <span>SONGEE STUDIO</span>
+                <span>SONGIE STUDIO</span>
                 <span>C-60 · DOLBY B</span>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function Home() {
           <div className="vinyl-layout">
             <div className="vinyl-stage">
               <div className="sleeve">
-                <div className="sl-top">SONGEE STUDIO<br />PRESENTS</div>
+                <div className="sl-top">SONGIE STUDIO<br />PRESENTS</div>
                 <div className="sl-title">Every<br />Yellow<br />Door</div>
                 <div className="sl-foot">
                   <span>FOR PRIYA · 30</span>
@@ -200,7 +200,7 @@ export default function Home() {
               <div className="record">
                 <div className="label-disc">
                   <div>
-                    <div className="lbl-title">SONGEE</div>
+                    <div className="lbl-title">SONGIE</div>
                     <div className="lbl-sub">SIDE A · 3:12</div>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function Home() {
             <div className="ft-brand">
               <a href="/" className="logo" style={{ color: "var(--cream)" }}>
                 <span className="logo-mark" />
-                SONGEE
+                SONGIE
               </a>
               <p>Custom songs made for one person at a time. Toronto · est. MMXXVI.</p>
             </div>
@@ -352,7 +352,7 @@ export default function Home() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songee · All rights reserved.</span>
+            <span>© 2026 Songie · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>

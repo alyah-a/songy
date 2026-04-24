@@ -29,7 +29,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Songee — A custom song made for one person.",
+  title: "Songie — A custom song made for one person.",
   description:
     "Tell us the story. We'll make them a song — original lyrics, their name in the chorus, crafted by our creative director and delivered in seven days.",
 };
