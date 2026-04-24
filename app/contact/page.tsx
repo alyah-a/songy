@@ -1,7 +1,7 @@
 import ContactForm from "../components/ContactForm";
 
 export const metadata = {
-  title: "Get in touch — Songy",
+  title: "Get in touch — Songee",
   description: "Corporate inquiries, brand partnerships, and general questions. We respond within four hours.",
 };
 
@@ -13,7 +13,7 @@ export default function ContactPage() {
         <div className="nav-inner">
           <a href="/" className="logo">
             <span className="logo-mark" />
-            SONGY
+            SONGEE
           </a>
           <div className="nav-links">
             <a href="/#pricing">Pricing</a>
@@ -51,7 +51,7 @@ export default function ContactPage() {
             <div className="ft-brand">
               <a href="/" className="logo" style={{ color: "var(--cream)" }}>
                 <span className="logo-mark" />
-                SONGY
+                SONGEE
               </a>
               <p>Custom songs made for one person at a time. Toronto · est. MMXXVI.</p>
             </div>
