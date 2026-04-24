@@ -69,19 +69,19 @@ export default function OrderForm() {
       
       const result = await createSongRequest({
         recipientName: form.recipientName,
-        senderName: form.relationship,
-        senderEmail: form.email,
+        relationship: form.relationship,
         occasion: form.occasion,
-        songType: productId,
         story: form.story,
-        specialRequests: form.addons.join(", "),
+        email: form.email,
+        addons: form.addons,
+        totalPriceCents: total * 100,
         productId,
       });
 
       if (result.success && result.orderId) {
         trackEvent("order_created", { orderId: result.orderId, productId });
         // Redirect to checkout page with order details
-        router.push(`/order/checkout?orderId=${result.orderId}&productId=${productId}`);
+        router.push(`/order/checkout?orderId=${result.orderId}&productId=${productId}&total=${total * 100}`);
       } else {
         throw new Error(result.error || "Failed to create order");
       }

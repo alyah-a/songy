@@ -14,15 +14,16 @@ const stripePromise = loadStripe(
 
 interface CheckoutProps {
   productId: string
-  metadata?: Record<string, string>
+  orderId: number
+  totalPriceCents: number
 }
 
-export function Checkout({ productId, metadata }: CheckoutProps) {
+export function Checkout({ productId, orderId, totalPriceCents }: CheckoutProps) {
   const [error, setError] = useState<string | null>(null)
 
   const fetchClientSecret = useCallback(async () => {
     try {
-      const { clientSecret } = await createCheckoutSession(productId, metadata)
+      const { clientSecret } = await createCheckoutSession(productId, orderId, totalPriceCents)
       if (!clientSecret) {
         throw new Error("No client secret returned")
       }
@@ -31,7 +32,7 @@ export function Checkout({ productId, metadata }: CheckoutProps) {
       setError(err instanceof Error ? err.message : "Failed to start checkout")
       throw err
     }
-  }, [productId, metadata])
+  }, [productId, orderId, totalPriceCents])
 
   if (error) {
     return (

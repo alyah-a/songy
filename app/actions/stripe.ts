@@ -3,8 +3,14 @@
 import { stripe } from "@/lib/stripe"
 import { PRODUCTS } from "@/lib/products"
 import { headers } from "next/headers"
+import { updateSongRequestStripeSession } from "./song-requests"
 
-export async function createCheckoutSession(productId: string, metadata?: Record<string, string>) {
+export async function createCheckoutSession(
+  productId: string, 
+  orderId: number,
+  totalPriceCents: number,
+  metadata?: Record<string, string>
+) {
   const product = PRODUCTS.find((p) => p.id === productId)
 
   if (!product) {
@@ -24,7 +30,7 @@ export async function createCheckoutSession(productId: string, metadata?: Record
             name: product.name,
             description: product.description,
           },
-          unit_amount: product.priceInCents,
+          unit_amount: totalPriceCents,
         },
         quantity: 1,
       },
@@ -33,9 +39,13 @@ export async function createCheckoutSession(productId: string, metadata?: Record
     return_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
     metadata: {
       productId: product.id,
+      orderId: orderId.toString(),
       ...metadata,
     },
   })
+
+  // Link the stripe session to the order in the database
+  await updateSongRequestStripeSession(orderId, session.id)
 
   return { clientSecret: session.client_secret }
 }

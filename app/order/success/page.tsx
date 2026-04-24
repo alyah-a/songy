@@ -11,28 +11,10 @@ export default function SuccessPage() {
 
 function SuccessLoading() {
   return (
-    <div className="success-page">
-      <div className="success-container">
-        <div className="success-loading">Loading order details...</div>
+    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4 py-8">
+      <div className="max-w-md w-full text-center text-[var(--color-text-muted)]">
+        Loading order details...
       </div>
-      <style jsx>{`
-        .success-page {
-          min-height: 100vh;
-          background: var(--color-bg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem 1rem;
-        }
-        .success-container {
-          max-width: 500px;
-          width: 100%;
-          text-align: center;
-        }
-        .success-loading {
-          color: var(--color-text-muted);
-        }
-      `}</style>
     </div>
   )
 }

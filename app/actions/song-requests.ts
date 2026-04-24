@@ -4,16 +4,17 @@ import { sql } from "@/lib/db"
 import { sendOrderConfirmationEmail } from "@/lib/emails"
 import * as Sentry from "@sentry/nextjs"
 
+// Data structure matching the actual database schema
 export interface SongRequestData {
   recipientName: string
-  recipientEmail?: string
-  senderName: string
-  senderEmail: string
+  relationship: string
   occasion: string
-  songType: string
   story: string
-  specialRequests?: string
+  email: string
+  addons?: string[]
+  totalPriceCents: number
   productId: string
+  nameRecordingUrl?: string
 }
 
 export async function createSongRequest(data: SongRequestData) {
@@ -21,25 +22,23 @@ export async function createSongRequest(data: SongRequestData) {
     const result = await sql`
       INSERT INTO song_requests (
         recipient_name,
-        recipient_email,
-        sender_name,
-        sender_email,
+        relationship,
         occasion,
-        song_type,
         story,
-        special_requests,
-        product_id,
-        status
+        email,
+        addons,
+        total_price_cents,
+        payment_status,
+        order_status
       ) VALUES (
         ${data.recipientName},
-        ${data.recipientEmail || null},
-        ${data.senderName},
-        ${data.senderEmail},
+        ${data.relationship},
         ${data.occasion},
-        ${data.songType},
         ${data.story},
-        ${data.specialRequests || null},
-        ${data.productId},
+        ${data.email},
+        ${data.addons || []},
+        ${data.totalPriceCents},
+        'pending',
         'pending'
       )
       RETURNING id
@@ -53,35 +52,55 @@ export async function createSongRequest(data: SongRequestData) {
   }
 }
 
-export async function updateSongRequestPayment(
-  orderId: string,
-  stripeSessionId: string,
-  paymentStatus: "paid" | "failed"
+export async function updateSongRequestStripeSession(
+  orderId: number,
+  stripeSessionId: string
 ) {
   try {
     await sql`
       UPDATE song_requests 
       SET 
         stripe_session_id = ${stripeSessionId},
-        payment_status = ${paymentStatus},
-        status = ${paymentStatus === "paid" ? "confirmed" : "cancelled"},
         updated_at = NOW()
       WHERE id = ${orderId}
+    `
+    return { success: true }
+  } catch (error) {
+    Sentry.captureException(error)
+    console.error("Failed to update stripe session:", error)
+    return { success: false, error: "Failed to update stripe session" }
+  }
+}
+
+export async function updateSongRequestPayment(
+  stripeSessionId: string,
+  paymentIntentId: string,
+  paymentStatus: "paid" | "failed"
+) {
+  try {
+    await sql`
+      UPDATE song_requests 
+      SET 
+        stripe_payment_intent_id = ${paymentIntentId},
+        payment_status = ${paymentStatus},
+        order_status = ${paymentStatus === "paid" ? "confirmed" : "cancelled"},
+        updated_at = NOW()
+      WHERE stripe_session_id = ${stripeSessionId}
     `
 
     if (paymentStatus === "paid") {
       // Fetch order details for email
       const order = await sql`
-        SELECT * FROM song_requests WHERE id = ${orderId}
+        SELECT * FROM song_requests WHERE stripe_session_id = ${stripeSessionId}
       `
 
       if (order[0]) {
         try {
           await sendOrderConfirmationEmail({
-            to: order[0].sender_email,
-            customerName: order[0].sender_name,
+            to: order[0].email,
+            customerName: order[0].recipient_name,
             recipientName: order[0].recipient_name,
-            songType: order[0].song_type,
+            songType: order[0].occasion,
             orderId: order[0].id,
           })
         } catch (emailError) {
@@ -99,7 +118,7 @@ export async function updateSongRequestPayment(
   }
 }
 
-export async function getSongRequest(orderId: string) {
+export async function getSongRequest(orderId: number) {
   try {
     const result = await sql`
       SELECT * FROM song_requests WHERE id = ${orderId}

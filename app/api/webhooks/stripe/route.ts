@@ -32,23 +32,27 @@ export async function POST(request: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session
-        const orderId = session.metadata?.orderId
 
-        if (orderId && session.payment_status === "paid") {
-          await updateSongRequestPayment(orderId, session.id, "paid")
-          console.log(`Payment completed for order ${orderId}`)
+        if (session.payment_status === "paid") {
+          await updateSongRequestPayment(
+            session.id,
+            session.payment_intent as string || "",
+            "paid"
+          )
+          console.log(`Payment completed for session ${session.id}`)
         }
         break
       }
 
       case "checkout.session.expired": {
         const session = event.data.object as Stripe.Checkout.Session
-        const orderId = session.metadata?.orderId
 
-        if (orderId) {
-          await updateSongRequestPayment(orderId, session.id, "failed")
-          console.log(`Payment expired for order ${orderId}`)
-        }
+        await updateSongRequestPayment(
+          session.id,
+          "",
+          "failed"
+        )
+        console.log(`Payment expired for session ${session.id}`)
         break
       }
 

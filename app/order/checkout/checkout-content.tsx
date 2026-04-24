@@ -7,8 +7,9 @@ export function CheckoutContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("orderId")
   const productId = searchParams.get("productId")
+  const totalCents = searchParams.get("total")
 
-  if (!orderId || !productId) {
+  if (!orderId || !productId || !totalCents) {
     return (
       <div className="checkout-error">
         <p>Invalid checkout session. Please start your order again.</p>
@@ -22,7 +23,8 @@ export function CheckoutContent() {
   return (
     <Checkout 
       productId={productId} 
-      metadata={{ orderId }} 
+      orderId={parseInt(orderId, 10)}
+      totalPriceCents={parseInt(totalCents, 10)}
     />
   )
 }
