@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Archivo_Black, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider } from "./providers/PostHogProvider";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -41,7 +42,9 @@ export default function RootLayout({
       lang="en"
       className={`${archivo.variable} ${archivoBl.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+          <PostHogProvider>{children}</PostHogProvider>
+        </body>
     </html>
   );
 }

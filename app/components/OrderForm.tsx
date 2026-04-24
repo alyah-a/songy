@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { createSongRequest } from "@/app/actions/song-requests";
+import { trackEvent } from "@/app/providers/PostHogProvider";
+import * as Sentry from "@sentry/nextjs";
 
 type Step = "details" | "story" | "confirm";
 
 export default function OrderForm() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>("details");
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     recipientName: "",
     relationship: "",
@@ -26,6 +31,7 @@ export default function OrderForm() {
         ? f.addons.filter((a) => a !== addon)
         : [...f.addons, addon],
     }));
+    trackEvent("addon_toggled", { addon });
   };
 
   const basePrice = 79;
@@ -37,15 +43,55 @@ export default function OrderForm() {
     basePrice +
     form.addons.reduce((sum, a) => sum + (addonPrices[a] ?? 0), 0);
 
-  if (submitted) {
-    return (
-      <div className="order-success">
-        <div className="success-icon">♪</div>
-        <h3>We&apos;ve got the story.</h3>
-        <p>Check your inbox — we&apos;ll confirm your order within a few hours and kick off the brief. Your song is on its way.</p>
-      </div>
-    );
-  }
+  // Determine product ID based on addons
+  const getProductId = () => {
+    if (form.addons.includes("rush") && form.addons.includes("video")) {
+      return "song-rush-video";
+    } else if (form.addons.includes("rush")) {
+      return "song-rush";
+    } else if (form.addons.includes("video")) {
+      return "song-video";
+    }
+    return "song-standard";
+  };
+
+  const handleStepChange = (newStep: Step) => {
+    setStep(newStep);
+    trackEvent("order_step_changed", { step: newStep });
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    trackEvent("order_submission_started", { total, addons: form.addons });
+
+    try {
+      const productId = getProductId();
+      
+      const result = await createSongRequest({
+        recipientName: form.recipientName,
+        senderName: form.relationship,
+        senderEmail: form.email,
+        occasion: form.occasion,
+        songType: productId,
+        story: form.story,
+        specialRequests: form.addons.join(", "),
+        productId,
+      });
+
+      if (result.success && result.orderId) {
+        trackEvent("order_created", { orderId: result.orderId, productId });
+        // Redirect to checkout page with order details
+        router.push(`/order/checkout?orderId=${result.orderId}&productId=${productId}`);
+      } else {
+        throw new Error(result.error || "Failed to create order");
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+      trackEvent("order_submission_failed", { error: String(error) });
+      alert("Something went wrong. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="order-form-wrap">
@@ -90,7 +136,7 @@ export default function OrderForm() {
             >
               {form.nameRecording ? (
                 <span className="file-chosen">
-                  ✓ {form.nameRecording.name}
+                  {form.nameRecording.name}
                 </span>
               ) : (
                 <>
@@ -140,7 +186,7 @@ export default function OrderForm() {
             className="btn-flame"
             style={{ width: "100%", justifyContent: "center", marginTop: 8 }}
             disabled={!form.recipientName || !form.relationship || !form.occasion}
-            onClick={() => setStep("story")}
+            onClick={() => handleStepChange("story")}
           >
             Next — tell the story
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -181,11 +227,11 @@ export default function OrderForm() {
           </div>
 
           <div className="form-nav">
-            <button className="btn-ghost" onClick={() => setStep("details")}>← Back</button>
+            <button className="btn-ghost" onClick={() => handleStepChange("details")}>← Back</button>
             <button
               className="btn-flame"
               disabled={!form.story || !form.email}
-              onClick={() => setStep("confirm")}
+              onClick={() => handleStepChange("confirm")}
             >
               Review order
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -251,12 +297,13 @@ export default function OrderForm() {
           <p className="ot-note">Extra revisions billed at $20 each if needed after the included round.</p>
 
           <div className="form-nav">
-            <button className="btn-ghost" onClick={() => setStep("story")}>← Back</button>
+            <button className="btn-ghost" onClick={() => handleStepChange("story")} disabled={isSubmitting}>← Back</button>
             <button
               className="btn-flame"
-              onClick={() => setSubmitted(true)}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
             >
-              Submit & pay ${total}
+              {isSubmitting ? "Processing..." : `Continue to payment`}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
