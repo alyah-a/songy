@@ -59,14 +59,14 @@ export default function Home() {
           </div>
 
           <h1 className="hero-headline">
-            <span className="row">A SONG</span>
-            <span className="row">MADE <em>for one</em></span>
-            <span className="row"><span className="stamp">PERSON.</span></span>
+            <span className="row">A CUSTOM SONG.</span>
+            <span className="row">MADE FOR <em>someone</em></span>
+            <span className="row"><span className="stamp">SPECIFIC.</span></span>
           </h1>
 
           <p className="hero-sub">
-            Tell us the story. We&apos;ll make them a song — original lyrics, their name in the chorus,{" "}
-            <b>crafted by our creative director and delivered in seven days.</b>
+            Tell us who it&apos;s for, what the occasion is, and what you want included.{" "}
+            <b>We&apos;ll write an original song and deliver it in 7 days.</b>
           </p>
 
           <div className="hero-ctas">
@@ -161,8 +161,8 @@ export default function Home() {
           <div className="corporate-banner">
             <div className="corp-left">
               <div className="eyebrow" style={{ marginBottom: 12 }}>For brands, agencies & content creators</div>
-              <h3 className="corp-h">Ordering songs<br />for your <em>audience?</em></h3>
-              <p>If you&apos;re a brand, agency, or content creator who needs custom songs regularly — for campaigns, gifting programs, or your community — we offer volume pricing, dedicated turnarounds, and a direct line to our creative director. Let&apos;s build something together.</p>
+              <h3 className="corp-h">Custom songs for brands,<br />creators, and <em>communities.</em></h3>
+              <p>Need songs for a campaign, audience gift, client program, or content series? We offer volume pricing, dedicated timelines, and direct creative support.</p>
             </div>
             <a href="/contact" className="corp-cta">
               Get in touch
@@ -180,10 +180,10 @@ export default function Home() {
           <div className="sec-head">
             <div>
               <div className="eyebrow">§ 02 · Library</div>
-              <h2 className="big">The <em>A-side.</em><br />Real songs.<br />Real people.</h2>
+              <h2 className="big">The sample library.<br /><em>Songs made for birthdays,</em><br />anniversaries, retirements, and more.</h2>
             </div>
             <p className="desc" style={{ color: "var(--cream)", opacity: 0.85 }}>
-              Every track was written for someone specific — a birthday, a retirement, a random Tuesday. Press play on a few.
+              Hear a few examples of custom songs made from customer briefs, personal details, and one-of-a-kind stories.
             </p>
           </div>
 
@@ -208,8 +208,8 @@ export default function Home() {
             </div>
 
             <div className="vinyl-copy">
-              <h3>Twelve tracks.<br /><em>All originals.</em></h3>
-              <p>Each one commissioned by a real person for another real person. No covers. No templates. Every song starts with a brief and ends with something that could not have been made for anyone else.</p>
+              <h3>Twelve samples.<br /><em>All made from scratch.</em></h3>
+              <p>No covers. No templates. Just original songs written from the details each customer chose to share.</p>
               <ul>
                 {[
                   ["A1", "Every Yellow Door", "3:12"],
@@ -243,10 +243,10 @@ export default function Home() {
           <div className="sec-head">
             <div>
               <div className="eyebrow" style={{ color: "var(--cream)" }}>§ 03 · Reactions</div>
-              <h2 className="big" style={{ color: "var(--cream)" }}>They hit play.<br /><em>Then cried.</em><br />Then laughed.</h2>
+              <h2 className="big" style={{ color: "var(--cream)" }}>They pressed play.<br /><em>Then played</em><br />it again.</h2>
             </div>
             <p className="desc" style={{ color: "var(--cream)", opacity: 0.85 }}>
-              What actually happens when someone hears a song written just for them.
+              What people are saying after gifting a custom song.
             </p>
           </div>
 

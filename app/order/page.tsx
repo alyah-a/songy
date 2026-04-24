@@ -40,7 +40,8 @@ export default function OrderPage() {
             <p style={{ fontSize: 17, lineHeight: 1.6, opacity: 0.75 }}>Ten minutes. The more you share — names, memories, inside jokes, the thing they always say — the better the song.</p>
           </div>
           <OrderForm />
-          <div className="order-quick-facts" style={{ marginTop: 32 }}>
+          <div style={{ marginTop: 32, textAlign: "center" }}>
+          <div className="order-quick-facts" style={{ display: "inline-flex" }}>
             <div className="oqf">
               <span className="oqf-num">$79</span>
               <span className="oqf-label">base price</span>
@@ -55,6 +56,7 @@ export default function OrderPage() {
               <span className="oqf-num">1</span>
               <span className="oqf-label">revision included</span>
             </div>
+          </div>
           </div>
         </div>
       </section>
