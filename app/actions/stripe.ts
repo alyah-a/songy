@@ -4,7 +4,6 @@ import { stripe } from "@/lib/stripe"
 import { requireEnv } from "@/lib/env"
 import { headers } from "next/headers"
 import { getSongRequest, updateSongRequestStripeSession } from "./song-requests"
-import type Stripe from "stripe"
 
 function getAddonSelectionFromProductId(productId: string) {
   return {
@@ -27,7 +26,7 @@ export async function createCheckoutSession(
   const order = await getSongRequest(orderId)
   const { wantsRush24, wantsVideo } = getAddonSelectionFromProductId(productId)
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+  const lineItems = [
     {
       price: baseSongPriceId,
       quantity: 1,
@@ -48,20 +47,22 @@ export async function createCheckoutSession(
     })
   }
 
-  const session = await stripe.checkout.sessions.create({
-    ui_mode: "embedded",
-    line_items: lineItems,
-    mode: "payment",
-    customer_email: order?.email || undefined,
-    return_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-    metadata: {
-      productId,
-      orderId: orderId.toString(),
-      wantsRush24: String(wantsRush24),
-      wantsVideo: String(wantsVideo),
-      ...metadata,
-    },
-  })
+  const session = await stripe.checkout.sessions.create(
+    {
+      ui_mode: "embedded",
+      line_items: lineItems,
+      mode: "payment",
+      customer_email: order?.email || undefined,
+      return_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        productId,
+        orderId: orderId.toString(),
+        wantsRush24: String(wantsRush24),
+        wantsVideo: String(wantsVideo),
+        ...metadata,
+      },
+    } as any
+  )
 
   // Link the stripe session to the order in the database
   await updateSongRequestStripeSession(orderId, session.id)
