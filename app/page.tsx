@@ -11,6 +11,7 @@ export default function Home() {
             SONGIE
           </a>
           <div className="nav-links">
+            <a href="#pricing">Pricing</a>
             <a href="#library">Sample library</a>
             <a href="/order">Order</a>
             <a href="#faq">FAQ</a>
@@ -96,12 +97,89 @@ export default function Home() {
         </div>
       </div>
 
+      {/* PRICING */}
+      <section className="blk" id="pricing">
+        <div className="container">
+          <div className="sec-head">
+            <div>
+              <div className="eyebrow">§ 01 · Pricing</div>
+              <h2 className="big">One price.<br /><em>No surprises.</em></h2>
+            </div>
+            <p className="desc">An original song, written and produced for one person. Everything else is optional.</p>
+          </div>
+
+          <div className="pricing-simple">
+            <div className="price-hero-block">
+              <div className="price-hero-left">
+                <div className="price-tag">
+                  <span className="price-cu">$</span>
+                  <span className="price-num">79</span>
+                  <span className="price-period">USD</span>
+                </div>
+                <div className="price-desc">
+                  <strong>Base song · 7-day delivery</strong>
+                  <p>One original song crafted for one person. Original lyrics, studio production, MP3 + lyric sheet. One revision round included.</p>
+                </div>
+              </div>
+              <a href="/order" className="btn-flame price-cta">
+                Start your song
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+
+            <div className="addons-label">
+              <span className="eyebrow" style={{ marginBottom: 0 }}>Add-ons</span>
+            </div>
+            <div className="addons-simple">
+              <div className="ao-s">
+                <div className="ao-s-left">
+                  <div className="ao-s-name">3-day turnaround</div>
+                  <div className="ao-s-hint">Need it fast? We&apos;ll prioritize your song.</div>
+                </div>
+                <div className="ao-s-price">+$49</div>
+              </div>
+              <div className="ao-s">
+                <div className="ao-s-left">
+                  <div className="ao-s-name">Video with photos & clips</div>
+                  <div className="ao-s-hint">We sync your song with photos or videos you provide.</div>
+                </div>
+                <div className="ao-s-price">+$59</div>
+              </div>
+              <div className="ao-s">
+                <div className="ao-s-left">
+                  <div className="ao-s-name">Extra revisions</div>
+                  <div className="ao-s-hint">One round included. Additional rounds available if needed.</div>
+                </div>
+                <div className="ao-s-price">+$20<span className="ao-s-unit">/round</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* CORPORATE */}
+          <div className="corporate-banner">
+            <div className="corp-left">
+              <div className="eyebrow" style={{ marginBottom: 12 }}>For brands, agencies & content creators</div>
+              <h3 className="corp-h">Ordering songs<br />for your <em>audience?</em></h3>
+              <p>If you&apos;re a brand, agency, or content creator who needs custom songs regularly — for campaigns, gifting programs, or your community — we offer volume pricing, dedicated turnarounds, and a direct line to our creative director. Let&apos;s build something together.</p>
+            </div>
+            <a href="/contact" className="corp-cta">
+              Get in touch
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* VINYL SHOWCASE */}
       <section className="vinyl-block" id="library">
         <div className="container">
           <div className="sec-head">
             <div>
-              <div className="eyebrow">§ 01 · Library</div>
+              <div className="eyebrow">§ 02 · Library</div>
               <h2 className="big">The <em>A-side.</em></h2>
             </div>
             <p className="desc" style={{ color: "var(--cream)", opacity: 0.85 }}>
@@ -164,7 +242,7 @@ export default function Home() {
         <div className="container">
           <div className="sec-head">
             <div>
-              <div className="eyebrow" style={{ color: "var(--cream)" }}>§ 02 · Reactions</div>
+              <div className="eyebrow" style={{ color: "var(--cream)" }}>§ 03 · Reactions</div>
               <h2 className="big" style={{ color: "var(--cream)" }}>They hit play.</h2>
             </div>
             <p className="desc" style={{ color: "var(--cream)", opacity: 0.85 }}>
@@ -208,7 +286,7 @@ export default function Home() {
         <div className="container">
           <div className="sec-head">
             <div>
-              <div className="eyebrow">§ 03 · Questions</div>
+              <div className="eyebrow">§ 04 · Questions</div>
               <h2 className="big">The <em>stuff</em><br />people ask.</h2>
             </div>
             <p className="desc">
@@ -251,6 +329,15 @@ export default function Home() {
               <ul>
                 <li><a href="#library">Sample library</a></li>
                 <li><a href="/order">Order a song</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Pricing</h4>
+              <ul>
+                <li><a href="#pricing">Base song · $79</a></li>
+                <li><a href="#pricing">3-day rush · +$49</a></li>
+                <li><a href="#pricing">Video · +$59</a></li>
+                <li><a href="/contact">Corporate inquiry</a></li>
               </ul>
             </div>
             <div>
