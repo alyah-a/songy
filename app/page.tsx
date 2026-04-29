@@ -65,7 +65,7 @@ export default function Home() {
           </h1>
 
           <p className="hero-sub">
-            Tell us the story. We&apos;ll make them a song — original lyrics, their name in the chorus,{" "}
+            Tell us the story. We&apos;ll make them a song. Original lyrics{" "}
             <b>crafted by our creative director and delivered in seven days.</b>
           </p>
 
@@ -146,13 +146,6 @@ export default function Home() {
                   <div className="ao-s-hint">We sync your song with photos or videos you provide.</div>
                 </div>
                 <div className="ao-s-price">+$59</div>
-              </div>
-              <div className="ao-s">
-                <div className="ao-s-left">
-                  <div className="ao-s-name">Extra revisions</div>
-                  <div className="ao-s-hint">One round included. Additional rounds available if needed.</div>
-                </div>
-                <div className="ao-s-price">+$20<span className="ao-s-unit">/round</span></div>
               </div>
             </div>
           </div>
@@ -334,9 +327,7 @@ export default function Home() {
             <div>
               <h4>Pricing</h4>
               <ul>
-                <li><a href="#pricing">Base song · $79</a></li>
-                <li><a href="#pricing">3-day rush · +$49</a></li>
-                <li><a href="#pricing">Video · +$59</a></li>
+                <li><a href="#pricing">Pricing</a></li>
                 <li><a href="/contact">Corporate inquiry</a></li>
               </ul>
             </div>
