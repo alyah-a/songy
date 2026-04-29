@@ -16,8 +16,8 @@ export interface Addon {
 export const ADDONS: Record<string, Addon> = {
   rush: {
     id: "rush",
-    name: "3-Day Rush Delivery",
-    description: "Priority turnaround in 3 days",
+    name: "24-Hour Rush Delivery",
+    description: "Priority turnaround in 24 hours",
     priceInCents: 4900, // $49
   },
   video: {

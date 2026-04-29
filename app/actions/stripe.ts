@@ -1,45 +1,64 @@
 "use server"
 
 import { stripe } from "@/lib/stripe"
-import { PRODUCTS } from "@/lib/products"
+import { requireEnv } from "@/lib/env"
 import { headers } from "next/headers"
-import { updateSongRequestStripeSession } from "./song-requests"
+import { getSongRequest, updateSongRequestStripeSession } from "./song-requests"
+import type Stripe from "stripe"
+
+function getAddonSelectionFromProductId(productId: string) {
+  return {
+    wantsRush24: productId.includes("rush"),
+    wantsVideo: productId.includes("video"),
+  }
+}
 
 export async function createCheckoutSession(
-  productId: string, 
+  productId: string,
   orderId: number,
-  totalPriceCents: number,
   metadata?: Record<string, string>
 ) {
-  const product = PRODUCTS.find((p) => p.id === productId)
-
-  if (!product) {
-    throw new Error(`Product not found: ${productId}`)
-  }
+  const baseSongPriceId = requireEnv("STRIPE_BASE_SONG_PRICE_ID")
+  const rush24PriceId = requireEnv("STRIPE_RUSH_24HR_PRICE_ID")
+  const videoAddonPriceId = requireEnv("STRIPE_VIDEO_ADDON_PRICE_ID")
 
   const headersList = await headers()
   const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  const order = await getSongRequest(orderId)
+  const { wantsRush24, wantsVideo } = getAddonSelectionFromProductId(productId)
+
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+    {
+      price: baseSongPriceId,
+      quantity: 1,
+    },
+  ]
+
+  if (wantsRush24) {
+    lineItems.push({
+      price: rush24PriceId,
+      quantity: 1,
+    })
+  }
+
+  if (wantsVideo) {
+    lineItems.push({
+      price: videoAddonPriceId,
+      quantity: 1,
+    })
+  }
 
   const session = await stripe.checkout.sessions.create({
     ui_mode: "embedded",
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: product.name,
-            description: product.description,
-          },
-          unit_amount: totalPriceCents,
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: lineItems,
     mode: "payment",
+    customer_email: order?.email || undefined,
     return_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
     metadata: {
-      productId: product.id,
+      productId,
       orderId: orderId.toString(),
+      wantsRush24: String(wantsRush24),
+      wantsVideo: String(wantsVideo),
       ...metadata,
     },
   })
