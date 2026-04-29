@@ -1,7 +1,7 @@
 import OrderForm from "../components/OrderForm";
 
 export const metadata = {
-  title: "Order a song — Songee",
+  title: "Order a song — SONGIE",
   description: "Tell us the story. We'll make them a song in seven days.",
 };
 
@@ -13,7 +13,7 @@ export default function OrderPage() {
         <div className="nav-inner">
           <a href="/" className="logo">
             <span className="logo-mark" />
-            SONGEE
+            SONGIE
           </a>
           <div className="nav-links">
             <a href="/#library">Sample library</a>
@@ -68,7 +68,7 @@ export default function OrderPage() {
             <div className="ft-brand">
               <a href="/" className="logo" style={{ color: "var(--cream)" }}>
                 <span className="logo-mark" />
-                SONGEE
+                SONGIE
               </a>
               <p>Custom songs made for one person at a time. Toronto · est. MMXXVI.</p>
             </div>
@@ -84,7 +84,7 @@ export default function OrderPage() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songy · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>
