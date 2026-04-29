@@ -1,6 +1,6 @@
 import { resend } from "./resend"
 
-const FROM_EMAIL = "Songy <noreply@resend.dev>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Songy <noreply@resend.dev>"
 
 export async function sendOrderConfirmationEmail({
   to,
@@ -13,12 +13,13 @@ export async function sendOrderConfirmationEmail({
   customerName: string
   recipientName: string
   songType: string
-  orderId: string
+  orderId: number | string
 }) {
+  const orderIdStr = String(orderId)
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `Your Songy Order Confirmation - #${orderId.slice(0, 8)}`,
+    subject: `Your Songy Order Confirmation - #${orderIdStr.slice(0, 8)}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -42,7 +43,7 @@ export async function sendOrderConfirmationEmail({
               <p>We've received your order and our talented musicians are getting ready to create something special!</p>
               
               <div class="highlight">
-                <p><strong>Order ID:</strong> ${orderId.slice(0, 8)}</p>
+                <p><strong>Order ID:</strong> ${orderIdStr.slice(0, 8)}</p>
                 <p><strong>Song Type:</strong> ${songType}</p>
                 <p><strong>For:</strong> ${recipientName}</p>
               </div>
@@ -79,7 +80,7 @@ export async function sendSongReadyEmail({
   to: string
   customerName: string
   recipientName: string
-  orderId: string
+  orderId: number | string
 }) {
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,

@@ -28,6 +28,7 @@ export async function createSongRequest(data: SongRequestData) {
         email,
         addons,
         total_price_cents,
+        product_id,
         payment_status,
         order_status
       ) VALUES (
@@ -38,6 +39,7 @@ export async function createSongRequest(data: SongRequestData) {
         ${data.email},
         ${data.addons || []},
         ${data.totalPriceCents},
+        ${data.productId},
         'pending',
         'pending'
       )
