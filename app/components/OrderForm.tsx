@@ -274,7 +274,7 @@ export default function OrderForm() {
                   onChange={() => toggleAddon("rush")}
                 />
                 <span className="addon-check-box" />
-                <span className="addon-check-label">3-day turnaround</span>
+                <span className="addon-check-label">24-hour rush delivery</span>
                 <span className="addon-check-price">+$49</span>
               </label>
               <label className={`addon-check${form.addons.includes("video") ? " checked" : ""}`}>

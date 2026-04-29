@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Privacy Policy — Songie",
-  description: "How Songie collects, uses, and protects your personal information.",
+  title: "Privacy Policy — SONGIE",
+  description: "How SONGIE collects, uses, and protects your personal information.",
 };
 
 export default function PrivacyPage() {
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           </div>
 
           <div className="legal-body">
-            <p>This Privacy Policy describes how Songie (&ldquo;Songie,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, and discloses your personal information when you visit our website, place an order, use our services, or otherwise communicate with us (collectively, the &ldquo;Services&rdquo;).</p>
+            <p>This Privacy Policy describes how SONGIE (&ldquo;SONGIE,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, and discloses your personal information when you visit our website, place an order, use our services, or otherwise communicate with us (collectively, the &ldquo;Services&rdquo;).</p>
             <p>By using our Services, you agree to the practices described in this Privacy Policy.</p>
 
             <h2>1. Information We Collect</h2>
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             </ul>
 
             <h2>3. Personalized Content and Submitted Information</h2>
-            <p>Because Songie creates custom songs based on information you provide, you acknowledge that the information submitted in your questionnaire, order form, or messages may be used by us and our collaborators to create, edit, produce, and deliver your order.</p>
+            <p>Because SONGIE creates custom songs based on information you provide, you acknowledge that the information submitted in your questionnaire, order form, or messages may be used by us and our collaborators to create, edit, produce, and deliver your order.</p>
             <p>You represent that you have the right to provide any names, stories, personal details, or other content you submit to us, including information about another person.</p>
 
             <h2>4. How We Share Information</h2>
@@ -128,7 +128,7 @@ export default function PrivacyPage() {
             <h2>14. Contact Us</h2>
             <p>If you have questions about this Privacy Policy or how we handle your information, contact us at:</p>
             <p>
-              Songie<br />
+              SONGIE<br />
               Email: <a href="mailto:hello@songy.studio">hello@songy.studio</a><br />
               Website: <a href="https://songy.studio">songy.studio</a>
             </p>
@@ -159,7 +159,7 @@ export default function PrivacyPage() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songie · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>

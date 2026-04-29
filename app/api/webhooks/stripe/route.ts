@@ -1,6 +1,7 @@
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
+import { requireEnv } from "@/lib/env"
 import { updateSongRequestPayment } from "@/app/actions/song-requests"
 import * as Sentry from "@sentry/nextjs"
 import type Stripe from "stripe"
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      requireEnv("STRIPE_WEBHOOK_SECRET")
     )
   } catch (err) {
     Sentry.captureException(err)

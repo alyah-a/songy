@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS song_requests (
   email VARCHAR(255) NOT NULL,
   addons TEXT[] DEFAULT '{}',
   total_price_cents INTEGER NOT NULL,
+  product_id VARCHAR(100),
   stripe_session_id VARCHAR(255),
   stripe_payment_intent_id VARCHAR(255),
   payment_status VARCHAR(50) DEFAULT 'pending',

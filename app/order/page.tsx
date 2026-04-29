@@ -1,7 +1,7 @@
 import OrderForm from "../components/OrderForm";
 
 export const metadata = {
-  title: "Order a song — Songie",
+  title: "Order a song — SONGIE",
   description: "Tell us the story. We'll make them a song in seven days.",
 };
 
@@ -84,7 +84,7 @@ export default function OrderPage() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songie · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>

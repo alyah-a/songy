@@ -1,5 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+Set these before running the app:
+
+- `DATABASE_URL` (Neon Postgres connection string)
+- `STRIPE_SECRET_KEY` (Stripe secret key)
+- `STRIPE_WEBHOOK_SECRET` (Stripe webhook signing secret)
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (Stripe publishable key)
+- `STRIPE_BASE_SONG_PRICE_ID` (Stripe Price ID for personalized song)
+- `STRIPE_RUSH_24HR_PRICE_ID` (Stripe Price ID for 24-hour rush)
+- `STRIPE_VIDEO_ADDON_PRICE_ID` (Stripe Price ID for video add-on)
+- `RESEND_API_KEY` (Resend API key)
+- `RESEND_FROM_EMAIL` (optional sender address, falls back to test address)
+- `NEXT_PUBLIC_SENTRY_DSN` and/or `SENTRY_DSN` (Sentry DSN)
+
 ## Getting Started
 
 First, run the development server:

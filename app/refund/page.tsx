@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Refund Policy — Songie",
-  description: "Songie's cancellation, refund, and revision policy for custom songs.",
+  title: "Refund Policy — SONGIE",
+  description: "SONGIE's cancellation, refund, and revision policy for custom songs.",
 };
 
 export default function RefundPage() {
@@ -37,7 +37,7 @@ export default function RefundPage() {
           </div>
 
           <div className="legal-body">
-            <p>At Songie, all songs are custom-made digital products created specifically for each customer. Because of the personalized nature of the service, our cancellation, refund, and revision policies are limited.</p>
+            <p>At SONGIE, all songs are custom-made digital products created specifically for each customer. Because of the personalized nature of the service, our cancellation, refund, and revision policies are limited.</p>
 
             <h2>1. Cancellation Policy</h2>
             <p>Because work on your order may begin shortly after purchase, cancellation eligibility depends on the turnaround option selected.</p>
@@ -64,7 +64,7 @@ export default function RefundPage() {
               <li>Failure to check spam, junk, or provided delivery instructions</li>
               <li>Technical issues on your own device, browser, email, or internet connection</li>
             </ul>
-            <p>If Songie fails to deliver a product substantially as described due solely to an error on our side, we may choose to correct and re-deliver the product, or issue a partial or full refund at our discretion.</p>
+            <p>If SONGIE fails to deliver a product substantially as described due solely to an error on our side, we may choose to correct and re-deliver the product, or issue a partial or full refund at our discretion.</p>
             <p>Any approved refund will be sent to the original payment method. Processing times depend on your payment provider.</p>
 
             <h2>3. Corrections and Small Edits</h2>
@@ -94,7 +94,7 @@ export default function RefundPage() {
             <h2>7. Contact</h2>
             <p>For cancellation, refund, or revision requests, contact:</p>
             <p>
-              Songie<br />
+              SONGIE<br />
               Email: <a href="mailto:hello@songy.studio">hello@songy.studio</a>
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function RefundPage() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songie · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { resend } from "./resend"
 
-const FROM_EMAIL = "Songie <noreply@resend.dev>"
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "SONGIE <noreply@resend.dev>"
 
 export async function sendOrderConfirmationEmail({
   to,
@@ -13,12 +13,13 @@ export async function sendOrderConfirmationEmail({
   customerName: string
   recipientName: string
   songType: string
-  orderId: string
+  orderId: number | string
 }) {
+  const orderIdStr = String(orderId)
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `Your Songie Order Confirmation - #${orderId.slice(0, 8)}`,
+    subject: `Your SONGIE Order Confirmation - #${orderIdStr.slice(0, 8)}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -42,7 +43,7 @@ export async function sendOrderConfirmationEmail({
               <p>We've received your order and our talented musicians are getting ready to create something special!</p>
               
               <div class="highlight">
-                <p><strong>Order ID:</strong> ${orderId.slice(0, 8)}</p>
+                <p><strong>Order ID:</strong> ${orderIdStr.slice(0, 8)}</p>
                 <p><strong>Song Type:</strong> ${songType}</p>
                 <p><strong>For:</strong> ${recipientName}</p>
               </div>
@@ -51,10 +52,10 @@ export async function sendOrderConfirmationEmail({
               
               <p>If you have any questions, feel free to reply to this email.</p>
               
-              <p>With melody,<br>The Songie Team</p>
+              <p>With melody,<br>The SONGIE Team</p>
             </div>
             <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} Songie. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} SONGIE. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -79,7 +80,7 @@ export async function sendSongReadyEmail({
   to: string
   customerName: string
   recipientName: string
-  orderId: string
+  orderId: number | string
 }) {
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
@@ -107,14 +108,14 @@ export async function sendSongReadyEmail({
               <p>Hi ${customerName},</p>
               <p>Great news! The personalized song for <strong>${recipientName}</strong> is now complete!</p>
               
-              <p>We hope this song brings joy and creates a memorable moment. Thank you for choosing Songie to help make this occasion special.</p>
+              <p>We hope this song brings joy and creates a memorable moment. Thank you for choosing SONGIE to help make this occasion special.</p>
               
               <p>If you have any feedback or questions, we'd love to hear from you!</p>
               
-              <p>With melody,<br>The Songie Team</p>
+              <p>With melody,<br>The SONGIE Team</p>
             </div>
             <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} Songie. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} SONGIE. All rights reserved.</p>
             </div>
           </div>
         </body>

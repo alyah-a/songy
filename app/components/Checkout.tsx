@@ -8,22 +8,28 @@ import {
 } from "@stripe/react-stripe-js"
 import { createCheckoutSession } from "@/app/actions/stripe"
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-)
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null
 
 interface CheckoutProps {
   productId: string
   orderId: number
-  totalPriceCents: number
 }
 
-export function Checkout({ productId, orderId, totalPriceCents }: CheckoutProps) {
+export function Checkout({ productId, orderId }: CheckoutProps) {
   const [error, setError] = useState<string | null>(null)
+
+  if (!stripePromise) {
+    return (
+      <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
+        <p>Error: Missing Stripe publishable key configuration.</p>
+      </div>
+    )
+  }
 
   const fetchClientSecret = useCallback(async () => {
     try {
-      const { clientSecret } = await createCheckoutSession(productId, orderId, totalPriceCents)
+      const { clientSecret } = await createCheckoutSession(productId, orderId)
       if (!clientSecret) {
         throw new Error("No client secret returned")
       }
@@ -32,7 +38,7 @@ export function Checkout({ productId, orderId, totalPriceCents }: CheckoutProps)
       setError(err instanceof Error ? err.message : "Failed to start checkout")
       throw err
     }
-  }, [productId, orderId, totalPriceCents])
+  }, [productId, orderId])
 
   if (error) {
     return (

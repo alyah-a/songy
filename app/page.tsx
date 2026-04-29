@@ -59,9 +59,9 @@ export default function Home() {
           </div>
 
           <h1 className="hero-headline">
-            <span className="row">A SONG</span>
-            <span className="row">MADE <em>for one</em></span>
-            <span className="row"><span className="stamp">PERSON.</span></span>
+            <span className="row">A SONG MADE</span>
+            <span className="row"><em>for your</em></span>
+            <span className="row"><span className="stamp">PERSON</span></span>
           </h1>
 
           <p className="hero-sub">
@@ -352,7 +352,7 @@ export default function Home() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songie · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>

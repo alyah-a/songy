@@ -1,7 +1,7 @@
 import ContactForm from "../components/ContactForm";
 
 export const metadata = {
-  title: "Get in touch — Songie",
+  title: "Get in touch — SONGIE",
   description: "Corporate inquiries, brand partnerships, and general questions. We respond within four hours.",
 };
 
@@ -67,7 +67,7 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="ft-bottom">
-            <span>© 2026 Songie · All rights reserved.</span>
+            <span>© 2026 SONGIE · All rights reserved.</span>
             <span>Made with care · Delivered in 7 days</span>
           </div>
         </div>
