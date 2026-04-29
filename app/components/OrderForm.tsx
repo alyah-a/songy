@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSongRequest } from "@/app/actions/song-requests";
 import { trackEvent } from "@/app/providers/PostHogProvider";
@@ -8,10 +8,26 @@ import * as Sentry from "@sentry/nextjs";
 
 type Step = "details" | "story" | "confirm";
 
+const MAX_NAME_RECORDING_BYTES = 2 * 1024 * 1024;
+const MAX_RECORDING_SECONDS = 12;
+
+function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function OrderForm() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("details");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingElapsed, setRecordingElapsed] = useState(0);
+  const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
+  const [recordingError, setRecordingError] = useState("");
   const [form, setForm] = useState({
     recipientName: "",
     relationship: "",
@@ -23,6 +39,159 @@ export default function OrderForm() {
   });
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const recordingChunksRef = useRef<BlobPart[]>([]);
+  const recordingTimerRef = useRef<number | null>(null);
+  const recordingUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) {
+        window.clearInterval(recordingTimerRef.current);
+      }
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+      if (recordingUrlRef.current) {
+        URL.revokeObjectURL(recordingUrlRef.current);
+      }
+    };
+  }, []);
+
+  const setAudioPreview = (url: string | null) => {
+    if (recordingUrlRef.current) {
+      URL.revokeObjectURL(recordingUrlRef.current);
+    }
+    recordingUrlRef.current = url;
+    setRecordingUrl(url);
+  };
+
+  const stopNameRecording = () => {
+    if (recordingTimerRef.current) {
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+  };
+
+  const startNameRecording = async () => {
+    setRecordingError("");
+
+    if (
+      typeof MediaRecorder === "undefined" ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+      setRecordingError("Recording is not supported in this browser. You can still upload an audio file.");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const options = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? { mimeType: "audio/webm;codecs=opus" }
+        : undefined;
+      const recorder = new MediaRecorder(stream, options);
+
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      recordingChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordingChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(recordingChunksRef.current, {
+          type: recorder.mimeType || "audio/webm",
+        });
+
+        stream.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+
+        if (!blob.size) {
+          setRecordingError("We couldn't capture that recording. Please try again.");
+          return;
+        }
+
+        if (blob.size > MAX_NAME_RECORDING_BYTES) {
+          setRecordingError("That clip is a little too long. Please keep it under 12 seconds.");
+          return;
+        }
+
+        const file = new File([blob], "name-pronunciation.webm", {
+          type: blob.type,
+        });
+        setForm((current) => ({ ...current, nameRecording: file }));
+        setAudioPreview(URL.createObjectURL(blob));
+        trackEvent("name_pronunciation_recorded", { size: blob.size });
+      };
+
+      setRecordingElapsed(0);
+      setIsRecording(true);
+      recorder.start();
+
+      const timerId = window.setInterval(() => {
+        setRecordingElapsed((seconds) => {
+          const next = seconds + 1;
+          if (next >= MAX_RECORDING_SECONDS) {
+            if (recordingTimerRef.current) {
+              window.clearInterval(recordingTimerRef.current);
+              recordingTimerRef.current = null;
+            }
+            if (mediaRecorderRef.current?.state === "recording") {
+              mediaRecorderRef.current.stop();
+            }
+            setIsRecording(false);
+          }
+          return next;
+        });
+      }, 1000);
+      recordingTimerRef.current = timerId;
+    } catch (error) {
+      Sentry.captureException(error);
+      setRecordingError("We couldn't access your microphone. You can still upload an audio file.");
+      setIsRecording(false);
+    }
+  };
+
+  const handleRecordingFile = (file: File | null) => {
+    setRecordingError("");
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("audio/")) {
+      setRecordingError("Please choose an audio file.");
+      return;
+    }
+
+    if (file.size > MAX_NAME_RECORDING_BYTES) {
+      setRecordingError("Please choose a short audio clip under 2 MB.");
+      return;
+    }
+
+    setForm({ ...form, nameRecording: file });
+    setAudioPreview(URL.createObjectURL(file));
+    trackEvent("name_pronunciation_uploaded", { size: file.size, type: file.type });
+  };
+
+  const clearNameRecording = () => {
+    if (isRecording) {
+      stopNameRecording();
+    }
+    setForm({ ...form, nameRecording: null });
+    setAudioPreview(null);
+    setRecordingElapsed(0);
+    setRecordingError("");
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+  };
 
   const toggleAddon = (addon: string) => {
     setForm((f) => ({
@@ -66,6 +235,9 @@ export default function OrderForm() {
 
     try {
       const productId = getProductId();
+      const nameRecordingUrl = form.nameRecording
+        ? await fileToDataUrl(form.nameRecording)
+        : undefined;
       
       const result = await createSongRequest({
         recipientName: form.recipientName,
@@ -76,6 +248,7 @@ export default function OrderForm() {
         addons: form.addons,
         totalPriceCents: total * 100,
         productId,
+        nameRecordingUrl,
       });
 
       if (result.success && result.orderId) {
@@ -130,29 +303,57 @@ export default function OrderForm() {
               Name pronunciation{" "}
               <span className="field-hint">optional — helps us nail it</span>
             </label>
-            <div
-              className="file-drop"
-              onClick={() => fileRef.current?.click()}
-            >
-              {form.nameRecording ? (
-                <span className="file-chosen">
-                  {form.nameRecording.name}
-                </span>
-              ) : (
-                <>
-                  <span className="file-icon">🎙</span>
-                  Upload a voice note saying their name
-                </>
-              )}
+            <div className="recorder-box">
+              <div className="recorder-top">
+                <div className="recorder-copy">
+                  <div className="recorder-actions">
+                    <button
+                      type="button"
+                      className={`record-btn${isRecording ? " recording" : ""}`}
+                      onClick={isRecording ? stopNameRecording : startNameRecording}
+                    >
+                      <span aria-hidden="true">🎙</span>
+                      {isRecording ? "Stop recording" : "Record in browser"}
+                    </button>
+                    <button
+                      type="button"
+                      className="upload-audio-btn"
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      Upload audio
+                    </button>
+                  </div>
+
+                  <div className="recording-meta">
+                    Say their name once or twice. Max {MAX_RECORDING_SECONDS} seconds.
+                    {isRecording ? <strong>{recordingElapsed}s</strong> : null}
+                  </div>
+                </div>
+              </div>
+
+              {recordingUrl ? (
+                <div className="audio-preview">
+                  <audio controls src={recordingUrl} />
+                  <button type="button" onClick={clearNameRecording}>
+                    Remove
+                  </button>
+                </div>
+              ) : null}
+
+              {recordingError ? (
+                <p className="recording-error">{recordingError}</p>
+              ) : null}
+
+              {form.nameRecording && !recordingUrl ? (
+                <span className="file-chosen">{form.nameRecording.name}</span>
+              ) : null}
             </div>
             <input
               ref={fileRef}
               type="file"
-              accept="audio/*,video/*"
+              accept="audio/*"
               style={{ display: "none" }}
-              onChange={(e) =>
-                setForm({ ...form, nameRecording: e.target.files?.[0] ?? null })
-              }
+              onChange={(e) => handleRecordingFile(e.target.files?.[0] ?? null)}
             />
           </div>
 

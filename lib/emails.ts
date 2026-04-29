@@ -1,6 +1,119 @@
 import { resend } from "./resend"
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "SONGIE <noreply@resend.dev>"
+const CREATIVE_DIRECTOR_EMAIL = process.env.CREATIVE_DIRECTOR_EMAIL
+const ORDER_NOTIFICATION_EMAIL = process.env.ORDER_NOTIFICATION_EMAIL
+
+type InternalOrderEmailData = {
+  id: number | string
+  recipientName: string
+  relationship: string
+  occasion: string
+  story: string
+  email: string
+  addons?: string[] | null
+  totalPriceCents: number
+  productId?: string | null
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  paymentStatus?: string | null
+  orderStatus?: string | null
+  nameRecordingUrl?: string | null
+  createdAt?: string | Date | null
+}
+
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+}
+
+function formatCents(cents: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100)
+}
+
+function formatAddons(addons?: string[] | null) {
+  return addons?.length ? addons.join(", ") : "None"
+}
+
+function getNameRecordingAttachment(nameRecordingUrl?: string | null) {
+  if (!nameRecordingUrl?.startsWith("data:")) {
+    return undefined
+  }
+
+  const match = nameRecordingUrl.match(/^data:([^;]+);base64,(.+)$/)
+  if (!match) {
+    return undefined
+  }
+
+  const [, contentType, content] = match
+  const extension = contentType.includes("mpeg")
+    ? "mp3"
+    : contentType.includes("wav")
+      ? "wav"
+      : contentType.includes("mp4")
+        ? "m4a"
+        : "webm"
+
+  return {
+    filename: `name-pronunciation.${extension}`,
+    content,
+    contentType,
+  }
+}
+
+function surveyResponseHtml(order: InternalOrderEmailData) {
+  return `
+    <div class="section">
+      <h2>Survey Response</h2>
+      <p><strong>Recipient:</strong> ${escapeHtml(order.recipientName)}</p>
+      <p><strong>From / relationship:</strong> ${escapeHtml(order.relationship)}</p>
+      <p><strong>Occasion:</strong> ${escapeHtml(order.occasion)}</p>
+      <p><strong>Customer email:</strong> ${escapeHtml(order.email)}</p>
+      <p><strong>Add-ons:</strong> ${escapeHtml(formatAddons(order.addons))}</p>
+      <p><strong>Name pronunciation:</strong> ${order.nameRecordingUrl ? "Attached to this email" : "Not provided"}</p>
+      <div class="story">
+        <strong>Story, memories, inside jokes</strong>
+        <p>${escapeHtml(order.story).replaceAll("\n", "<br />")}</p>
+      </div>
+    </div>
+  `
+}
+
+function internalEmailShell(title: string, body: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.55; color: #111010; }
+          .container { max-width: 720px; margin: 0 auto; padding: 24px; }
+          .header { background: #ff4a1c; color: #fff8e8; padding: 24px; }
+          .content { background: #fff8e8; padding: 24px; border: 2px solid #111010; }
+          h1 { margin: 0; font-size: 24px; }
+          h2 { margin-top: 0; font-size: 18px; }
+          .section { margin-bottom: 24px; }
+          .story { background: #fff; border-left: 4px solid #ff4a1c; padding: 16px; margin-top: 16px; }
+          .meta { width: 100%; border-collapse: collapse; }
+          .meta td { border-bottom: 1px solid rgba(17,16,16,.15); padding: 8px 0; vertical-align: top; }
+          .meta td:first-child { width: 190px; font-weight: 700; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>${escapeHtml(title)}</h1></div>
+          <div class="content">${body}</div>
+        </div>
+      </body>
+    </html>
+  `
+}
 
 export async function sendOrderConfirmationEmail({
   to,
@@ -125,6 +238,78 @@ export async function sendSongReadyEmail({
 
   if (error) {
     console.error("Failed to send song ready email:", error)
+    throw error
+  }
+
+  return data
+}
+
+export async function sendCreativeDirectorBriefEmail(order: InternalOrderEmailData) {
+  if (!CREATIVE_DIRECTOR_EMAIL) {
+    console.warn("Skipping creative director email: CREATIVE_DIRECTOR_EMAIL is not set")
+    return null
+  }
+
+  const recordingAttachment = getNameRecordingAttachment(order.nameRecordingUrl)
+  const { data, error } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: CREATIVE_DIRECTOR_EMAIL,
+    replyTo: order.email,
+    subject: `New SONGIE brief: ${order.recipientName} - ${order.occasion}`,
+    html: internalEmailShell(
+      "New Creative Brief",
+      `
+        ${surveyResponseHtml(order)}
+        <p>Replying to this email will reply to the customer.</p>
+      `
+    ),
+    attachments: recordingAttachment ? [recordingAttachment] : undefined,
+  })
+
+  if (error) {
+    console.error("Failed to send creative director brief email:", error)
+    throw error
+  }
+
+  return data
+}
+
+export async function sendOwnerOrderNotificationEmail(order: InternalOrderEmailData) {
+  if (!ORDER_NOTIFICATION_EMAIL) {
+    console.warn("Skipping owner order email: ORDER_NOTIFICATION_EMAIL is not set")
+    return null
+  }
+
+  const recordingAttachment = getNameRecordingAttachment(order.nameRecordingUrl)
+  const { data, error } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: ORDER_NOTIFICATION_EMAIL,
+    replyTo: order.email,
+    subject: `Paid SONGIE order #${String(order.id)} - ${formatCents(order.totalPriceCents)}`,
+    html: internalEmailShell(
+      "Paid Order Notification",
+      `
+        <div class="section">
+          <h2>Order Information</h2>
+          <table class="meta">
+            <tr><td>Order ID</td><td>${escapeHtml(order.id)}</td></tr>
+            <tr><td>Total paid</td><td>${escapeHtml(formatCents(order.totalPriceCents))}</td></tr>
+            <tr><td>Product</td><td>${escapeHtml(order.productId || "Unknown")}</td></tr>
+            <tr><td>Payment status</td><td>${escapeHtml(order.paymentStatus || "Unknown")}</td></tr>
+            <tr><td>Order status</td><td>${escapeHtml(order.orderStatus || "Unknown")}</td></tr>
+            <tr><td>Stripe session</td><td>${escapeHtml(order.stripeSessionId || "None")}</td></tr>
+            <tr><td>Stripe payment intent</td><td>${escapeHtml(order.stripePaymentIntentId || "None")}</td></tr>
+            <tr><td>Created</td><td>${escapeHtml(order.createdAt || "Unknown")}</td></tr>
+          </table>
+        </div>
+        ${surveyResponseHtml(order)}
+      `
+    ),
+    attachments: recordingAttachment ? [recordingAttachment] : undefined,
+  })
+
+  if (error) {
+    console.error("Failed to send owner order notification email:", error)
     throw error
   }
 
