@@ -59,8 +59,8 @@ export default function Home() {
           </div>
 
           <h1 className="hero-headline">
-            <span className="row">A SONG MADE</span>
-            <span className="row"><em>for your</em></span>
+            <span className="row">A SONG</span>
+            <span className="row">MADE <em>for your</em></span>
             <span className="row"><span className="stamp">PERSON</span></span>
           </h1>
 
