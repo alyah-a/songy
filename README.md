@@ -13,6 +13,8 @@ Set these before running the app:
 - `STRIPE_VIDEO_ADDON_PRICE_ID` (Stripe Price ID for video add-on)
 - `RESEND_API_KEY` (Resend API key)
 - `RESEND_FROM_EMAIL` (optional sender address, falls back to test address)
+- `CREATIVE_DIRECTOR_EMAIL` (receives the paid customer survey/creative brief)
+- `ORDER_NOTIFICATION_EMAIL` (receives the paid order details and survey response)
 - `NEXT_PUBLIC_SENTRY_DSN` and/or `SENTRY_DSN` (Sentry DSN)
 
 ## Getting Started

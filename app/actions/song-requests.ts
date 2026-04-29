@@ -1,7 +1,11 @@
 "use server"
 
 import { sql } from "@/lib/db"
-import { sendOrderConfirmationEmail } from "@/lib/emails"
+import {
+  sendCreativeDirectorBriefEmail,
+  sendOrderConfirmationEmail,
+  sendOwnerOrderNotificationEmail,
+} from "@/lib/emails"
 import * as Sentry from "@sentry/nextjs"
 
 // Data structure matching the actual database schema
@@ -26,6 +30,7 @@ export async function createSongRequest(data: SongRequestData) {
         occasion,
         story,
         email,
+        name_recording_url,
         addons,
         total_price_cents,
         product_id,
@@ -37,6 +42,7 @@ export async function createSongRequest(data: SongRequestData) {
         ${data.occasion},
         ${data.story},
         ${data.email},
+        ${data.nameRecordingUrl || null},
         ${data.addons || []},
         ${data.totalPriceCents},
         ${data.productId},
@@ -97,6 +103,24 @@ export async function updateSongRequestPayment(
       `
 
       if (order[0]) {
+        const paidOrder = {
+          id: order[0].id,
+          recipientName: order[0].recipient_name,
+          relationship: order[0].relationship,
+          occasion: order[0].occasion,
+          story: order[0].story,
+          email: order[0].email,
+          addons: order[0].addons,
+          totalPriceCents: order[0].total_price_cents,
+          productId: order[0].product_id,
+          stripeSessionId: order[0].stripe_session_id,
+          stripePaymentIntentId: order[0].stripe_payment_intent_id,
+          paymentStatus: order[0].payment_status,
+          orderStatus: order[0].order_status,
+          nameRecordingUrl: order[0].name_recording_url,
+          createdAt: order[0].created_at,
+        }
+
         try {
           await sendOrderConfirmationEmail({
             to: order[0].email,
@@ -108,6 +132,20 @@ export async function updateSongRequestPayment(
         } catch (emailError) {
           Sentry.captureException(emailError)
           console.error("Failed to send confirmation email:", emailError)
+        }
+
+        try {
+          await sendCreativeDirectorBriefEmail(paidOrder)
+        } catch (emailError) {
+          Sentry.captureException(emailError)
+          console.error("Failed to send creative director email:", emailError)
+        }
+
+        try {
+          await sendOwnerOrderNotificationEmail(paidOrder)
+        } catch (emailError) {
+          Sentry.captureException(emailError)
+          console.error("Failed to send owner order notification email:", emailError)
         }
       }
     }

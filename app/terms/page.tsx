@@ -14,7 +14,6 @@ export default function TermsPage() {
             SONGIE
           </a>
           <div className="nav-links">
-            <a href="/#pricing">Pricing</a>
             <a href="/#library">Sample library</a>
             <a href="/order">Order</a>
             <a href="/#faq">FAQ</a>
